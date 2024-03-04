@@ -4,10 +4,10 @@ from pathlib import Path
 
 # Use Matplotlib to save the image with automatic normalization to the range of 0 ~ 255.
 def save_image(path, img):
-    dir = ""
-    str_array = path.split("/")[0:-1]
+    dir = ''
+    str_array = path.split('/')[0:-1]
     for str in str_array:
-        dir = dir + str + "/"
+        dir = dir + str + '/'
     Path(dir).mkdir(parents=True, exist_ok=True)
     plt.imsave(path, img, cmap=plt.cm.gray)
 
