@@ -1,9 +1,7 @@
 import numpy as np
 import ctypes
-from numba import jit
 from scipy.special import ndtr
 
-@jit()
 def DispEn2D(img, m = 2, c = 5):
     row, col = img.shape
 
