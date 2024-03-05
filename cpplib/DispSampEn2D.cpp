@@ -10,7 +10,7 @@ double DispSampEn2D(double* arr, int row, int col, int m){
             long long hash = 0;
             for(int x = 0; x < m; x ++){
                 for(int y = 0; y < m; y ++){
-                    hash = (hash * base + (long long) arr[i * col + j]) % mod;
+                    hash = (hash * base + (long long) arr[(i + x) * col + j + y]) % mod;
                 }
             }
             pattern_m[(int) hash] ++;
