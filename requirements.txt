@@ -2,3 +2,4 @@ gdown
 numpy
 opencv-python
 matplotlib
+scipy
