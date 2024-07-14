@@ -3,3 +3,5 @@ img/
 __pycache__/
 
 *.dll
+
+output/

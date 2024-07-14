@@ -3,15 +3,13 @@ import tarfile
 import os
 import numpy as np
 
-from lib.utils import save_image, load_image, brodatz_groups, kylberg_groups, create_folders_for_path
+from lib.utils import save_image, load_image, brodatz_groups, kylberg_groups, p_array, create_folders_for_path
 from math import sqrt, sin, pi
 from random import uniform, random
 
 def main():
     image_row = 128
     image_col = 128
-
-    p_array = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
     # Synthetic dataset
     pattern = create_pattern_image(image_row, image_col, 12)

@@ -68,7 +68,7 @@ def disp_samp_en_2d(img, m = (2, 2), mapping = 'ncdf', c = -1):
     if c <= 0:
         c = max(2, int(math.floor((row - m_row) * (col - m_col)) ** (1 / ((m_row + 1) * (m_col + 1)))))
 
-    print(f'DispEn2D start: m = {m}, mapping = {mapping}, c = {c}.')
+    print(f'DispSampEn2D start: m = {m}, mapping = {mapping}, c = {c}.')
     start_time = time()
 
     if mapping == 'linear':
@@ -89,7 +89,7 @@ def disp_samp_en_2d(img, m = (2, 2), mapping = 'ncdf', c = -1):
     ret = disp_samp_en_2d_caller(((ctypes.c_double * col) * row) (*arr), (ctypes.c_int32) (row), (ctypes.c_int32) (col), (ctypes.c_int32) (m_row), (ctypes.c_int32) (m_col))
 
     end_time = time()
-    print(f'DispEn2D end: elapsed time = {end_time - start_time}.')
+    print(f'DispSampEn2D end: elapsed time = {end_time - start_time}.')
     if ret == -1:
         return math.inf
     elif ret == -2:

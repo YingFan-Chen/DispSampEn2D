@@ -26,4 +26,4 @@ assert abs(result - 5.9833763) < 0.000001
 result = disp_samp_en_2d(img, (2, 2))
 assert abs(result - 0.7574938) < 0.000001
 
-print('[Tests all pass.]')
+print('[Tests all pass]')
