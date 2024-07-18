@@ -5,6 +5,8 @@ from lib.utils import create_folders_for_path, p_array, brodatz_groups, kylberg_
 from lib.entropy import disp_en_2d, samp_en_2d, disp_samp_en_2d
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 
 def main():
@@ -17,17 +19,18 @@ def main():
     parser.add_argument('--r', type=float, default=0.24, help='0.24')
     parser.add_argument('--dataset', type=str, default='synthetic', help='synthetic, Brodatz, Kylberg')
     parser.add_argument('--p', type=str, default='0.0', help='0.0 ~ 1.0')
-    parser.add_argument('--rerun_computation', default=False, action='store_true', help='rerun entropy computation or not')
+    parser.add_argument('--classifier', type=str, default='bayes', help='bayes, mlp')
+    parser.add_argument('--rerun', default=False, action='store_true', help='rerun entropy computation or not')
     args = parser.parse_args()
 
     if args.task == 'compute_entropy':
         for m in args.m_array:
             compute_entropy(args.entropy, m, args.mapping, args.c, args.r, args.dataset, args.p)
     elif args.task == 'classification':
-        if args.rerun_computation:
+        if args.rerun:
             for m in args.m_array:
                 compute_entropy(args.entropy, m, args.mapping, args.c, args.r, args.dataset, args.p)
-        classification(args.entropy, args.m_array, args.dataset, args.p)
+        classification(args.entropy, args.m_array, args.dataset, args.p, args.classifier)
     else:
         print(f'Wrong task: {args.task}.')
 
@@ -61,11 +64,18 @@ def compute_entropy(entropy, m, mapping, c, r, dataset, p):
                 output = entropy_helper(img, entropy, m, mapping, c, r)
                 write_csv(output_path, [f'{group}_{index}', group, output], 'a+')
 
-def classification(entropy, m_array, dataset, p):
+def classification(entropy, m_array, dataset, p, classifier='bayes'):
     X, y = prepare_data(entropy, m_array, dataset, p)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1618)
-    classifier = GaussianNB()
+
+    if classifier == 'bayes':
+        classifier = GaussianNB()
+        classifier.fit(X_train, y_train)
+    elif classifier == 'mlp':
+        classifier = find_best_mlp_classifier(X_train, y_train)
+    else:
+        raise ValueError('No matching classifier.')
 
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
@@ -109,6 +119,22 @@ def prepare_data(entropy, m_array, dataset, p):
                     X[count].append(float(row['entropy']))
                 count += 1
     return X, y
+
+def find_best_mlp_classifier(X_train, y_train):
+    # Can set the grid parameters here
+    max_iter = 2000
+    param_grid = {
+        'hidden_layer_sizes': [(25, 25, 25, 25), (50, 50), (100,)],
+        'activation': ['relu'],
+        'solver': ['adam'],
+        'alpha': [0.001],
+    }
+
+    mlp = MLPClassifier(max_iter=max_iter)
+    grid_search = GridSearchCV(estimator=mlp, param_grid=param_grid, cv=5)
+    grid_search.fit(X_train, y_train)
+    print(f'Best parameters for MLP: {grid_search.best_params_}.')
+    return grid_search.best_estimator_
 
 if __name__ == '__main__':
     main()

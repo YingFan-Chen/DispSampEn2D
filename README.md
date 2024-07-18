@@ -32,8 +32,8 @@ python3 main.py --task compute_entropy --entropy DispSampEn2D --m_array 2 3 4 --
 python3 main.py --task compute_entropy --entropy DispSampEn2D --m_array 2 3 4 --mapping ncdf --c -1 --dataset Kylberg --p 0.0
 
 # Classification task for real-world datasets
-python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --dataset Brodatz --p 0.0
-python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --dataset Kylberg --p 0.0
+python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --dataset Brodatz --p 0.0 --classifier bayes
+python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --dataset Kylberg --p 0.0 --classifier bayes
 ```
 ### Arguments
 - --task: task to execute, e.g. compute_entropy, classification.
@@ -44,4 +44,5 @@ python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --d
 - --r: ratio of similarity threshold for SampEn2D only. e.g. 0.24.
 - --dataset: image datasets. e.g. synthetic, Brodatz, Kylberg.
 - --p: probability for noise mix. e.g. 0.0 ~ 1.0.
-- --rerun_computation: rerun entropy computation or not.
+- --classifier: for classification tasks only. e.g. bayes, mlp.
+- --rerun: rerun entropy computation or not.
