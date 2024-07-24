@@ -1,5 +1,6 @@
 import argparse
 import csv
+import numpy as np
 
 from lib.utils import create_folders_for_path, p_array, brodatz_groups, kylberg_groups, load_image, brodatz_sample_count, kylberg_smaple_count
 from lib.entropy import disp_en_2d, samp_en_2d, disp_samp_en_2d
@@ -11,7 +12,7 @@ from sklearn.metrics import accuracy_score
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--task', type=str, default='compute_entropy', help='compute_entropy, classification')
+    parser.add_argument('--task', type=str, default='compute_entropy', help='compute_entropy, classification, compute_mean_std')
     parser.add_argument('--entropy', type=str, default='DispSampEn2D', help='DispEn2D, SampEn2D, DispSampEn2D')
     parser.add_argument('--m_array', type=int, nargs='+', default=[2, 3, 4], help='2, 3, 4, ...')
     parser.add_argument('--mapping', type=str, default='ncdf', help='ncdf, linear')
@@ -30,7 +31,15 @@ def main():
         if args.rerun:
             for m in args.m_array:
                 compute_entropy(args.entropy, m, args.mapping, args.c, args.r, args.dataset, args.p)
+
         classification(args.entropy, args.m_array, args.dataset, args.p, args.classifier)
+    elif args.task == 'compute_mean_std':
+        if args.rerun:
+            for m in args.m_array:
+                compute_entropy(args.entropy, m, args.mapping, args.c, args.r, args.dataset, args.p)
+
+        for m in args.m_array:
+            compute_mean_std(args.entropy, m, args.dataset, args.p)
     else:
         print(f'Wrong task: {args.task}.')
 
@@ -71,7 +80,6 @@ def classification(entropy, m_array, dataset, p, classifier='bayes'):
 
     if classifier == 'bayes':
         classifier = GaussianNB()
-        classifier.fit(X_train, y_train)
     elif classifier == 'mlp':
         classifier = find_best_mlp_classifier(X_train, y_train)
     else:
@@ -135,6 +143,31 @@ def find_best_mlp_classifier(X_train, y_train):
     grid_search.fit(X_train, y_train)
     print(f'Best parameters for MLP: {grid_search.best_params_}.')
     return grid_search.best_estimator_
+
+def compute_mean_std(entropy, m, dataset, p):
+    print(f'Compute mean and std by groups for entropy: {entropy}, m: {m}, dataset: {dataset}, p: {p}.')
+
+    if dataset == 'Brodatz':
+        groups = brodatz_groups
+    elif dataset == 'Kylberg':
+        groups = kylberg_groups
+    else:
+        raise ValueError('No matching real-world dataset: {dataset}.')
+
+    # Initialize the dictionary
+    entropy_lists_by_groups = {}
+    for group in groups:
+        entropy_lists_by_groups[group] = []
+
+    input_path = f'output/{entropy}_{m}/{dataset}_{p}.csv'
+    with open(input_path, mode='r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['entropy'] != 'nan' and row['entropy'] != 'inf':
+                entropy_lists_by_groups[row['group']].append(float(row['entropy']))
+
+    for group, entropy_list in entropy_lists_by_groups.items():
+        print(f'Group: {group}, mean: {np.average(entropy_list)}, std: {np.std(entropy_list)}.')
 
 if __name__ == '__main__':
     main()

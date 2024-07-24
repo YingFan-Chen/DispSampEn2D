@@ -34,9 +34,13 @@ python3 main.py --task compute_entropy --entropy DispSampEn2D --m_array 2 3 4 --
 # Classification task for real-world datasets
 python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --dataset Brodatz --p 0.0 --classifier bayes
 python3 main.py --task classification --entropy DispSampEn2D --m_array 2 3 4 --dataset Kylberg --p 0.0 --classifier bayes
+
+# Compute entropy mean and std by groups for real-world datasets
+python3 main.py --task compute_mean_std --entropy DispSampEn2D --m_array 2 --dataset Brodatz --p 0.0
+python3 main.py --task compute_mean_std --entropy DispSampEn2D --m_array 2 --dataset Kylberg --p 0.0
 ```
 ### Arguments
-- --task: task to execute, e.g. compute_entropy, classification.
+- --task: task to execute, e.g. compute_entropy, classification, compute_mean_std.
 - --entropy: entropy algorithm, e.g. DispEn2D, SampEn2D, DispSampEn2D.
 - --m_array: embedding dimensions array, e.g. [2], [3], [2, 3, 4].
 - --mapping:
